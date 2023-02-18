@@ -9,7 +9,7 @@ trait Scrapper
     /**
      * @param $number
      * @param $url
-     * @return Collection
+     * @return array
      */
     public function scrapper($number, $url)
     {
@@ -41,7 +41,7 @@ trait Scrapper
     /**
      * @param $th
      * @param $td
-     * @return Collection
+     * @return array
      */
     public function format($th, $td)
     {
@@ -60,7 +60,7 @@ trait Scrapper
             $i = $i + 1;
         }
 
-        $result = collect($result);
+        $result = $result;
 
         return $result;
     }

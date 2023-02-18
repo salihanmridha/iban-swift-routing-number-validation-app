@@ -32,19 +32,20 @@ class RoutingNumberVerificationController extends Controller
                 "Routing Bank $routingNumber->routing_number is valid",
                 new RoutingNumberVerificationResource($routingNumber));
         }
+
         $fetch = $this->scrapper($request->number, self::URL);
 
-        if(count($fetch) > 0){
+        if(count($fetch) > 0 && array_key_exists("routing_number", $fetch) && array_key_exists("bank", $fetch)){
             $routingNumber = RoutingNumber::create([
                 "routing_number" => $fetch["routing_number"],
-                "date_of_revision" => $fetch["date_of_revision"],
-                "new_routing_number" => $fetch["new_routing_number"],
+                "date_of_revision" => $fetch["date_of_revision"] ?? null,
+                "new_routing_number" => $fetch["new_routing_number"] ?? null,
                 "bank" => $fetch["bank"],
-                "address" => $fetch["address"],
-                "city" => $fetch["city"],
-                "state" => $fetch["state"],
-                "zip" => $fetch["zip"],
-                "phone" => $fetch["phone"],
+                "address" => $fetch["address"] ?? null,
+                "city" => $fetch["city"] ?? null,
+                "state" => $fetch["state"] ?? null,
+                "zip" => $fetch["zip"] ?? null,
+                "phone" => $fetch["phone"] ?? null,
             ]);
             return $this->data(
                 Response::HTTP_OK,
