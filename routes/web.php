@@ -14,5 +14,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+    abort(\Symfony\Component\HttpFoundation\Response::HTTP_FORBIDDEN);
     //return view('welcome');
 });

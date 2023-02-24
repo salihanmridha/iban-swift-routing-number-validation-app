@@ -15,7 +15,8 @@ class RoutingNumberVerificationController extends Controller
 {
     use Scrapper, ResponseJson;
 
-    const URL = 'https://www.theswiftcodes.com/routing-number-checker/';
+    const THESWIFTCODES = 'https://www.theswiftcodes.com/routing-number-checker/';
+    const BANKCODES = 'https://bank.codes/us-routing-number-checker/';
 
     /**
      * @param RoutingNumberVerificationRequest $request
@@ -33,7 +34,15 @@ class RoutingNumberVerificationController extends Controller
                 new RoutingNumberVerificationResource($routingNumber));
         }
 
-        $fetch = $this->scrapper($request->number, self::URL);
+//        $fetch = $this->scrapingBee(
+//            $request->number,
+//            self::BANKCODES,
+//            "input[name=routing]",
+//            "input[name=routing]",
+//            "input[type=submit]"
+//        );
+
+        $fetch = $this->phpScrapper($request->number, self::THESWIFTCODES);
 
         if(count($fetch) > 0 && array_key_exists("routing_number", $fetch) && array_key_exists("bank", $fetch)){
             $routingNumber = RoutingNumber::create([
