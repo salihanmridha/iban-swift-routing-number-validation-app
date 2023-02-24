@@ -3,15 +3,17 @@
 namespace App\Traits;
 
 use Illuminate\Support\Collection;
+use Symfony\Component\HttpFoundation\Response;
 
 trait Scrapper
 {
+    private static $scrapingBeeUrl = "https://app.scrapingbee.com/api/v1/";
     /**
      * @param $number
      * @param $url
      * @return array
      */
-    public function scrapper($number, $url)
+    public function phpScrapper($number, $url): array
     {
         $request = array(
             'http' => array(
@@ -27,15 +29,37 @@ trait Scrapper
 
         $html = file_get_contents($url, true, $context);
 
-        $dom = new \DOMDocument();
-        libxml_use_internal_errors(true);
-        $dom->loadHTML($html);
-        libxml_use_internal_errors(false);
+        return $this->format($this->getHtmlByTagName($html, "th"), $this->getHtmlByTagName($html, "td"));
+    }
 
-        $th = $dom->getElementsByTagName('th');
-        $td = $dom->getElementsByTagName('td');
+    /**
+     * @param string $number
+     * @param string $url
+     * @param string $wait_for
+     * @param string $fill
+     * @param string $click
+     * @return array
+     */
+    public function scrapingBee(string $number, string $url, string $wait_for, string $fill, string $click): array
+    {
+        $url = urlencode($url);
 
-        return $this->format($th, $td);
+        $jsScenario = [
+            "instructions" => [
+                ["wait_for" => $wait_for],
+                ['fill' => [$fill, $number]],
+                ["click" => $click]
+            ],
+        ];
+
+        $jsScenario = json_encode($jsScenario, true);
+        $jsScenario = urlencode($jsScenario);
+
+        $response = $this->curlRequestToScrapingBee($url, $jsScenario);
+
+        return $this->format($this->getHtmlByTagName($response, "th"), $this->getHtmlByTagName($response, "td"));
+
+
     }
 
     /**
@@ -43,9 +67,10 @@ trait Scrapper
      * @param $td
      * @return array
      */
-    public function format($th, $td)
+    private function format($th, $td)
     {
         $result = [];
+        $aTableHeaderHTML = [];
 
         foreach($th as $heading)
         {
@@ -60,8 +85,38 @@ trait Scrapper
             $i = $i + 1;
         }
 
-        $result = $result;
-
         return $result;
+    }
+
+    private function curlRequestToScrapingBee(string $url, string $jsScenario)
+    {
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, self::$scrapingBeeUrl . "?api_key=" . config('app.scraping_bee_api')
+            . "&url=$url&js_scenario=$jsScenario");
+
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        $response = curl_exec($ch);
+
+        if (!$response) {
+            abort(Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        curl_close($ch);
+
+        return $response;
+    }
+
+    private function getHtmlByTagName($response, $tagName)
+    {
+        $dom = new \DOMDocument();
+        libxml_use_internal_errors(true);
+        $dom->loadHTML($response);
+        libxml_use_internal_errors(false);
+
+        return $dom->getElementsByTagName($tagName);
     }
 }
