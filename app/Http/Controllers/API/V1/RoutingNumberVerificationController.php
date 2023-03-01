@@ -42,13 +42,13 @@ class RoutingNumberVerificationController extends Controller
 //            "input[type=submit]"
 //        );
 
-        $fetch = $this->phpScrapper($request->number, self::THESWIFTCODES);
+        $fetch = $this->phpScrapper($request->number, self::THESWIFTCODES, 'routing');
 
-        if(count($fetch) > 0 && array_key_exists("routing_number", $fetch) && array_key_exists("bank", $fetch)){
+        if(count($fetch) > 0 && array_key_exists("routingnumber", $fetch) && array_key_exists("bank", $fetch)){
             $routingNumber = RoutingNumber::create([
-                "routing_number" => $fetch["routing_number"],
-                "date_of_revision" => $fetch["date_of_revision"] ?? null,
-                "new_routing_number" => $fetch["new_routing_number"] ?? null,
+                "routing_number" => $fetch["routingnumber"],
+                "date_of_revision" => $fetch["dateofrevision"] ?? null,
+                "new_routing_number" => $fetch["newroutingnumber"] ?? null,
                 "bank" => $fetch["bank"],
                 "address" => $fetch["address"] ?? null,
                 "city" => $fetch["city"] ?? null,

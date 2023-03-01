@@ -8,19 +8,20 @@ use Symfony\Component\HttpFoundation\Response;
 trait Scrapper
 {
     private static $scrapingBeeUrl = "https://app.scrapingbee.com/api/v1/";
+
     /**
      * @param $number
      * @param $url
      * @return array
      */
-    public function phpScrapper($number, $url): array
+    public function phpScrapper($number, $url, $inputContent): array
     {
         $request = array(
             'http' => array(
                 'header' => 'Content-Type: application/x-www-form-urlencoded',
                 'method' => 'POST',
                 'content' => http_build_query(array(
-                    'routing' => $number
+                    $inputContent => $number
                 ))
             )
         );
@@ -74,14 +75,22 @@ trait Scrapper
 
         foreach($th as $heading)
         {
-            $aTableHeaderHTML[] = trim($heading->textContent);
+            if (in_array(trim($heading->textContent), $aTableHeaderHTML)){
+                $aTableHeaderHTML[] = "breakdown " . trim($heading->textContent);
+            } else {
+                $aTableHeaderHTML[] = trim($heading->textContent);
+            }
         }
 
         $i = 0;
         foreach($td as $content)
         {
-            $thAsKey = strtolower(str_replace(' ', '_', $aTableHeaderHTML[$i]));
+            $thAsKey = strtolower($aTableHeaderHTML[$i]);
+
+            $thAsKey = preg_replace('/[^a-zA-Z0-9.]/', '', $thAsKey);
+
             $result[$thAsKey] = trim($content->textContent);
+
             $i = $i + 1;
         }
 
