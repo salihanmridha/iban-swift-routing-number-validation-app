@@ -23,4 +23,9 @@ Route::prefix("V1")->group(function () {
         '/verify-routing-number',
         [\App\Http\Controllers\API\V1\RoutingNumberVerificationController::class, 'store']
     )->name('api.verify.routing.number');
+
+    Route::get(
+        '/verify-swift-code',
+        [\App\Http\Controllers\API\V1\SwiftCodeVerificationController::class, 'store']
+    )->name('api.verify.swift.code');
 });
