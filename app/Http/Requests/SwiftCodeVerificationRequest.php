@@ -24,7 +24,7 @@ class SwiftCodeVerificationRequest extends FormRequest
     public function rules()
     {
         return [
-            "code" => "required|regex:/^[a-zA-Z0-9]+$/i|between:8,11"
+            "code" => ["required", "regex:/^([A-Za-z0-9]{11}|[A-Za-z0-9]{8})+$/i"]
         ];
     }
 
