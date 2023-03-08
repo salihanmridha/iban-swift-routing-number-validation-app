@@ -30,6 +30,10 @@ trait Scrapper
 
         $html = file_get_contents($url, true, $context);
 
+        if($inputContent === "iban"){
+            return $this->ibanFormat($this->getHtmlByTagName($html, "th"), $this->getHtmlByTagName($html, "td"));
+        }
+
         return $this->format($this->getHtmlByTagName($html, "th"), $this->getHtmlByTagName($html, "td"));
     }
 
@@ -95,6 +99,49 @@ trait Scrapper
         }
 
         return $result;
+    }
+
+    private function ibanFormat($th, $td)
+    {
+        $result = [];
+        $tdToArr = [];
+        $aTableHeaderHTML = [];
+
+        foreach($th as $heading)
+        {
+            if (in_array(trim($heading->textContent), $aTableHeaderHTML)){
+                $aTableHeaderHTML[] = "breakdown " . trim($heading->textContent);
+            } else {
+                $aTableHeaderHTML[] = trim($heading->textContent);
+            }
+        }
+
+        $i = 0;
+        foreach($td as $content)
+        {
+            $tdToArr[$i] = trim($content->textContent);
+
+            $i = $i + 1;
+        }
+        array_shift($tdToArr);
+
+        for ($i = 0; count($aTableHeaderHTML) > $i; $i++){
+            $thAsKey = strtolower($aTableHeaderHTML[$i]);
+
+            $thAsKey = preg_replace('/[^a-zA-Z0-9.]/', '', $thAsKey);
+
+            $result[$thAsKey] = trim($tdToArr[$i]);
+
+        }
+
+        if( in_array( "SWIFT Code", $tdToArr) )
+        {
+            $key = array_search ('SWIFT Code', $tdToArr);
+            $result["swift_code"] = trim($tdToArr[$key+1]);
+        }
+
+        return $result;
+
     }
 
     private function curlRequestToScrapingBee(string $url, string $jsScenario)

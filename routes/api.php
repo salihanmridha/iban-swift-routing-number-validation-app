@@ -28,4 +28,9 @@ Route::prefix("V1")->group(function () {
         '/verify-swift-code',
         [\App\Http\Controllers\API\V1\SwiftCodeVerificationController::class, 'store']
     )->name('api.verify.swift.code');
+
+    Route::get(
+        '/verify-iban-number',
+        [\App\Http\Controllers\API\V1\IbanNumberVerificationController::class, 'store']
+    )->name('api.verify.iban.number');
 });

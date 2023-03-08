@@ -55,46 +55,46 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception)
     {
-        if ($exception instanceof FatalError) {
-            return response()->json([
-                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-                'success' => false,
-                'message' => "Sorry! We are unable to process your request at this moment. Try again later". $exception->getMessage(),
-            ]);
-        }
-
-        if ($exception instanceof QueryException){
-            return response()->json([
-                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-                'success' => false,
-                'message' => "Sorry! We are unable to process your request at this moment. Try again later",
-            ]);
-        }
-
-        if ($exception instanceof ValidationException){
-            return response()->json([
-                'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
-                'success' => false,
-                'message' => $exception->getMessage(),
-                'errors' => $exception->errors()
-            ]);
-        }
-
-        if ($exception instanceof NotFoundHttpException){
-            return response()->json([
-                'status' => Response::HTTP_NOT_FOUND,
-                'success' => false,
-                'message' => $exception->getMessage(),
-            ]);
-        }
-
-        if($exception instanceof \Error) {
-            return response()->json([
-                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-                'success' => false,
-                'message' => "Sorry! We are unable to process your request at this moment. Try again later",
-            ]);
-        }
+//        if ($exception instanceof FatalError) {
+//            return response()->json([
+//                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+//                'success' => false,
+//                'message' => "Sorry! We are unable to process your request at this moment. Try again later". $exception->getMessage(),
+//            ]);
+//        }
+//
+//        if ($exception instanceof QueryException){
+//            return response()->json([
+//                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+//                'success' => false,
+//                'message' => "Sorry! We are unable to process your request at this moment. Try again later",
+//            ]);
+//        }
+//
+//        if ($exception instanceof ValidationException){
+//            return response()->json([
+//                'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
+//                'success' => false,
+//                'message' => $exception->getMessage(),
+//                'errors' => $exception->errors()
+//            ]);
+//        }
+//
+//        if ($exception instanceof NotFoundHttpException){
+//            return response()->json([
+//                'status' => Response::HTTP_NOT_FOUND,
+//                'success' => false,
+//                'message' => $exception->getMessage(),
+//            ]);
+//        }
+//
+//        if($exception instanceof \Error) {
+//            return response()->json([
+//                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+//                'success' => false,
+//                'message' => "Sorry! We are unable to process your request at this moment. Try again later",
+//            ]);
+//        }
 
         return parent::render($request, $exception);
     }
