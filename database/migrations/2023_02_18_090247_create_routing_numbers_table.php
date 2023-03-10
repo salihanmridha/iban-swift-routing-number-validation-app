@@ -15,10 +15,11 @@ return new class extends Migration
     {
         Schema::create('routing_numbers', function (Blueprint $table) {
             $table->id();
+            $table->boolean("success")->default(true);
             $table->string("routing_number", 50)->unique();
             $table->string("date_of_revision", 50)->nullable();
             $table->string("new_routing_number", 50)->nullable();
-            $table->string("bank", 255);
+            $table->string("bank", 255)->nullable();
             $table->string("address", 255)->nullable();
             $table->string("city", 100)->nullable();
             $table->string("state", 100)->nullable();

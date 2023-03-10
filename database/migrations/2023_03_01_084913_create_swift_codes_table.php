@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('swift_codes', function (Blueprint $table) {
             $table->id();
             $table->string("swift_code", 50)->unique();
-            $table->string("bank", 50);
+            $table->boolean("success")->default(true);
+            $table->string("bank", 50)->nullable();
             $table->string("city", 50)->nullable();
             $table->string("branch", 255)->nullable();
             $table->string("address", 255)->nullable();

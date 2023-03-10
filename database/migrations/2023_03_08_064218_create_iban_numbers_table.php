@@ -16,10 +16,11 @@ return new class extends Migration
         Schema::create('iban_numbers', function (Blueprint $table) {
             $table->id();
             $table->string("iban", 100)->unique();
+            $table->boolean("success")->default(true);
             $table->string("country", 100)->nullable();
             $table->string("sepa_country", 50)->nullable();
             $table->string("checksum", 50)->nullable();
-            $table->string("bban", 255);
+            $table->string("bban", 255)->nullable();
             $table->string("bank_code", 100)->nullable();
             $table->string("account_number", 255)->nullable();
             $table->string("branch_code", 50)->nullable();
