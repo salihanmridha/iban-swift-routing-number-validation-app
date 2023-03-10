@@ -24,12 +24,20 @@ class SwiftCodeVerificationController extends Controller
     {
         $swiftCode = SwiftCode::firstWhere("swift_code", $request->code);
 
-        if ($swiftCode){
+        if ($swiftCode && $swiftCode->success == true){
             return $this->data(
                 Response::HTTP_OK,
                 true,
                 "SWIFT code $swiftCode->swift_code is valid",
                 new SwiftCodeVerificationResource($swiftCode));
+        }
+
+        if ($swiftCode && $swiftCode->success == false){
+            return $this->data(
+                Response::HTTP_NOT_FOUND,
+                false,
+                "The SWIFT code that you entered is invalid. Please try again.",
+                null);
         }
 
 //        $fetch = $this->scrapingBee(
@@ -65,6 +73,11 @@ class SwiftCodeVerificationController extends Controller
                 "SWIFT code $swiftCode->swift_code is valid",
                 new SwiftCodeVerificationResource($swiftCode));
         }
+
+        SwiftCode::create([
+            "swift_code" => $request->code,
+            "success" => false
+        ]);
 
         return $this->data(
             Response::HTTP_NOT_FOUND,

@@ -26,12 +26,20 @@ class RoutingNumberVerificationController extends Controller
     {
         $routingNumber = RoutingNumber::firstWhere("routing_number", $request->number);
 
-        if ($routingNumber){
+        if ($routingNumber && $routingNumber->success == true){
             return $this->data(
                 Response::HTTP_OK,
                 true,
                 "Routing Bank $routingNumber->routing_number is valid",
                 new RoutingNumberVerificationResource($routingNumber));
+        }
+
+        if ($routingNumber && $routingNumber->success == false){
+            return $this->data(
+                Response::HTTP_NOT_FOUND,
+                false,
+                "The Routing Number that you entered does not exist in our database. Please try again.",
+                null);
         }
 
 //        $fetch = $this->scrapingBee(
@@ -62,6 +70,11 @@ class RoutingNumberVerificationController extends Controller
                 "Routing Bank $routingNumber->routing_number is valid",
                 new RoutingNumberVerificationResource($routingNumber));
         }
+
+        RoutingNumber::create([
+            "routing_number" => $request->number,
+            "success" => false
+        ]);
 
         return $this->data(
             Response::HTTP_NOT_FOUND,

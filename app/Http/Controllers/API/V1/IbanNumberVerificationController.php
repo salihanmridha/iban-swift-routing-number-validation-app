@@ -24,12 +24,20 @@ class IbanNumberVerificationController extends Controller
     {
         $iban = IbanNumber::firstWhere("iban", $request->number);
 
-        if ($iban){
+        if ($iban && $iban->success == true){
             return $this->data(
                 Response::HTTP_OK,
                 true,
                 $iban->iban . " is a valid IBAN",
                 new IbanNumberVerificationResource($iban));
+        }
+
+        if ($iban && $iban->success == false){
+            return $this->data(
+                Response::HTTP_NOT_FOUND,
+                false,
+                $request->number . " is an invalid IBAN",
+                null);
         }
 
         $fetch = $this->phpScrapper($request->number, self::THESWIFTCODESFORIBAN, 'iban');
@@ -64,6 +72,11 @@ class IbanNumberVerificationController extends Controller
                 $iban->iban . " is a valid IBAN",
                 new IbanNumberVerificationResource($iban));
         }
+
+        IbanNumber::create([
+            "iban" => $request->number,
+            "success" => false
+        ]);
 
         return $this->data(
             Response::HTTP_NOT_FOUND,
